@@ -1,11 +1,12 @@
-# Cargar bases de datos ####
+# Library load.
+library(tidyverse)
 
 
-base_datos <- readr::read_delim("C:/Users/neris/Desktop/LABORATORIO/Articulo_diversity/ALL_metadata_PASS_20221116.csv") %>%
+# Load metadata database ####
+
+
+base_datos <- readr::read_delim("data/ALL_metadata_PASS_20221116.csv") %>%
   tidyr::replace_na(list(Continent = "Unknown",Isolation_source = "Unknown")) # metadata de las muestras
-#
-datos_genomicos <- read_delim("C:/Users/neris/Desktop/LABORATORIO/Articulo_diversity/ISOLATES_QC_ALLINFO.csv") %>%
-  rename(Nombre_archivo_neris = Accession) # datos de Kleborate
 
 base_datos <- base_datos %>%
   mutate(ORIGIN = case_when(
@@ -15,27 +16,22 @@ base_datos <- base_datos %>%
   )) %>%
   filter(!(str_detect(Nombre_archivo_neris, "HCV2_51")))
 
+
+# Load genomic database ####
+
+datos_genomicos <- read_delim("data/ISOLATES_QC_ALLINFO.csv") %>%
+  rename(Nombre_archivo_neris = Accession) # datos de Kleborate
+
 datos_genomicos$Nombre_archivo_neris <-
   gsub("LONG_", "", datos_genomicos$Nombre_archivo_neris)
+
+# Merge databases ####
 
 datos_total <- left_join(base_datos, datos_genomicos) %>%
   filter(!(str_detect(Nombre_archivo_neris, "HCV2_51")))
 
 
-ncontig_hist <- 
-  datos_total %>%
-  ggplot(aes(x=contigs))+
-  geom_bar(fill="#084c61")+
-  scale_fill_identity()+
-  geom_vline(xintercept=20, 
-             color = "darkred")+        
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
-  scale_x_continuous(expand = c(0, 0), limits = c(0, NA))  +
-  xlab("Contigs")+
-  ylab("Assemblies") 
-
-#saveplot(filename = "CH3_ncontigshist", ncontig_hist, "t")
-
+# Edit merge bd ####
 
 datos_total$ST.1 <- gsub("-.*", "", datos_total$ST)
 
@@ -65,40 +61,7 @@ datos_total$Bla_acquired2 <-
     vectorize = F
   )
 
-STGROUPING = c(
-  "ST512",
-  "ST392",
-  "ST17",
-  "ST29",
-  "ST219",
-  "ST101",
-  "ST405",
-  "ST147",
-  "ST15",
-  "ST258",
-  "ST11",
-  "ST307",
-  "Other"
-)
 
-STGROUPING_2 = c(
-  "ST512",
-  "ST392",
-  "ST17",
-  "ST29",
-  "ST219",
-  "ST101",
-  "ST405",
-  "ST147",
-  "ST15",
-  "ST16",
-  "ST258",
-  "ST11",
-  "ST307",
-  "ST437",
-  "ST37",
-  "Other"
-)
 
 
 datos_total <- mutate(
@@ -168,14 +131,4 @@ STORDER_ALL2 <- datos_total %>%
 
 
 
-RESTYPEORDER <- c("Susceptible", "Omp", "Bla", "ESBL", "Carb")
-ORIGINORDER <-
-  c("NLSAR",
-    "Spain",
-    "Europe",
-    "Americas" ,
-    "Africa" ,    "Asia",
-    "Oceania",
-    "Unknown")
-fORIGINORDER <- factor(ORIGIN, levels = ORIGINORDER)
 

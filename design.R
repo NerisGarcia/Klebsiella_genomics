@@ -2,9 +2,7 @@
 # Neris Garcia
 # THEME, COLORS and ETC:..
 
-
-# COLORS AND ORDER   ####
-## Colors ####
+# Colors ####
 
   TYPECOL = c(NLSAR="#DC3977", DB="#045275")
 
@@ -68,12 +66,16 @@
       Convergent= "#93c47d"
     )
 
-##ORDER ####
+#ORDER ####
+  
+  ## Hospital #####
   HOSPORDER = c("HDM", "HGUC", "HUCV", "HAV", "HUPLF", "HGUV", "HULR", "HGUA", "HGUE")
   
   HOSPORDER2 = c("HDM", "HGUC", "HUPLF", "HGUA",  "HCUV", "HAV","HGUV", "HULR", "HGUE")
   
   HOSPORDER3 = c("Non-SKPCV", "HDM", "HGUC", "HUPLF", "HGUA",  "HCUV", "HAV","HGUV", "HULR", "HGUE")
+  
+  ## ST #####
   
   STORDERv1 = c("Other", "ST45", "ST392", "ST17", "ST29",  "ST219", "ST101",
                 "ST405", "ST147", "ST15",  "ST11", "ST307")
@@ -91,6 +93,43 @@
                 "ST29",  "ST17",  "ST392", "ST45","ST14", "ST37",  "ST902",
                 "ST13", "ST512", "ST395", "ST33", NA_character_ ) 
   
+  STGROUPING = c(
+    "ST512",
+    "ST392",
+    "ST17",
+    "ST29",
+    "ST219",
+    "ST101",
+    "ST405",
+    "ST147",
+    "ST15",
+    "ST258",
+    "ST11",
+    "ST307",
+    "Other"
+  )
+  
+  STGROUPING_2 = c(
+    "ST512",
+    "ST392",
+    "ST17",
+    "ST29",
+    "ST219",
+    "ST101",
+    "ST405",
+    "ST147",
+    "ST15",
+    "ST16",
+    "ST258",
+    "ST11",
+    "ST307",
+    "ST437",
+    "ST37",
+    "Other"
+  )
+  
+  ## Resistance #####
+  
   RESTYPEORDER=c("Susceptible", "Bla", "Omp", "AmpC", "ESBL", "Carb")
   
   CARBTYPEORDER=c("Susceptible","Omp", "ESBL",   "Omp+ESBL","AmpC","Omp+AmpC","CarbaEnzyme"                 )
@@ -101,6 +140,21 @@
   ATBRESORDER=c("BlaR" , "3GCR", "CarbR", "Carb_3GCR")
   
   ATBRESORDER = c("Susceptible", "3GC", "threeres", "Carba", "fourres")
+  
+  RESTYPEORDER <- c("Susceptible", "Omp", "Bla", "ESBL", "Carb")
+  
+  
+  ## ORIGIN ####
+  
+  ORIGINORDER <-
+    c("NLSAR",
+      "Spain",
+      "Europe",
+      "Americas" ,
+      "Africa" ,  
+      "Asia",
+      "Oceania",
+      "Unknown")
   
   
   ORIGINORDER <-
