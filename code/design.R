@@ -2,9 +2,30 @@
 # Neris Garcia
 # THEME, COLORS and ETC:..
 
+# THEME ------------------------------------------------------------------------
+# Install font monserrat in your conmputer
+library(extrafont)
+font_import(promp = F, pattern = "Montserrat-Medium")
+
+loadfonts(device = "win")
+
+library(ggplot2)
+theme_set(theme_classic(base_family = "Montserrat Medium"))
+
+theme_update(
+  text = element_text(family = "Montserrat Medium"),
+  axis.text.x = element_text(color = "black"),
+  axis.text.y = element_text(color = "black"),
+  axis.ticks = element_line(color = "black"),
+  legend.title = element_text(size = 8),
+  legend.text = element_text(size = 8)
+)
+
+update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
+
 # Colors ####
 
-  TYPECOL = c(NLSAR="#DC3977", DB="#045275")
+  TYPECOL = c(SKPCV="#DC3977", DB="#045275")
 
   HOSPCOL = c(HGUV = "#ffa500", HAV ="#fcde9c", HCV="#f0746e", HGE="#7c1d6f", 
             HGUA="#02764b", HGUC ="#089099", HLF="#7ccba2", HRA="#dc3977", HM="#C5C5C5", 
@@ -34,7 +55,7 @@
 
   ORIGINCOL <-
     c(
-      NLSAR = "#C0A8CB",
+      SKPCV = "#C0A8CB",
       Spain = "#dc3977",
       Europe = "#7c1d6f",
       Americas = "#fcde9c" ,
@@ -128,6 +149,21 @@
     "Other"
   )
   
+  ## SL ######
+  
+  SLCOLORS = c("SL2258;SL307;SL322"="#93c47d", 
+               "SL10009;SL14;SL258" = "#64acee", 
+               "SL14;SL147;SL889"="#d5a6bd", #"#c90076", 
+               "SL15"="#935fca",
+               "SL14"="#442C5D", 
+               "SL101;SL3157"  = "#e69138",  
+              "SL17;SL337" ="#b69561", #"#744700", 
+              "SL1245;SL14;SL45"="#9a170d",
+              "SL10009;SL14;SL37" ="#4E0707",
+              "SL23;SL3010;SL3321"= "#555555", 
+              Other="lightgrey")
+  
+  
   ## Resistance #####
   
   RESTYPEORDER=c("Susceptible", "Bla", "Omp", "AmpC", "ESBL", "Carb")
@@ -147,7 +183,7 @@
   ## ORIGIN ####
   
   ORIGINORDER <-
-    c("NLSAR",
+    c("SKPCV",
       "Spain",
       "Europe",
       "Americas" ,
@@ -158,7 +194,7 @@
   
   
   ORIGINORDER <-
-    c("NLSAR",
+    c("SKPCV",
       "Spain",
       "Europe",
       "Asia",
