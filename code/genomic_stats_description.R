@@ -1,6 +1,7 @@
 # Library load.
 library(tidyverse)
 library(ggpubr)
+library(scatterpie) # pie in maps
 
 setwd("C:/Users/neris/Desktop/RESEARCH/Projects/Articulo_diversity/Klebsiella_global_genomics")
 
@@ -90,6 +91,26 @@ ncbi.genomic.db <-
 
 ncbi.genomic.db %>% 
   count(Country)
+
+
+country_selected <-
+  pass.genomic.db %>% 
+  count(Country2) %>%
+  mutate(prop = round(n/sum(n)*100, 2)) %>% 
+  arrange(desc(prop)) %>% 
+  filter(prop > 0.9 & Country2 != "Unknown") %>% 
+  pull(Country2)
+
+country_selected
+
+country_selected_LatLon <-
+  pass.genomic.db %>% 
+  filter(Country2 %in% country_selected) %>% 
+  group_by(Country2) %>% 
+  filter(row_number() == 1) %>%
+  mutate(Lat=mean(Lat), Lon= mean(Lon)) %>% 
+  select(Country, Lat, Lon)
+
 
 ### Collection year#####
 ncbi.genomic.db %>% 
@@ -319,25 +340,7 @@ pST_Region <-
 
 
 #### Map ####
-
-country_selected <-
-  pass.genomic.db %>% 
-  count(Country2) %>%
-  mutate(prop = round(n/sum(n)*100, 2)) %>% 
-  arrange(desc(prop)) %>% 
-  filter(prop > 0.9 & Country2 != "Unknown") %>% 
-  pull(Country2)
-
-country_selected
-
-country_selected_LatLon <-
-  pass.genomic.db %>% 
-  filter(Country2 %in% country_selected) %>% 
-  group_by(Country2) %>% 
-  filter(row_number() == 1) %>%
-  mutate(Lat=mean(Lat), Lon= mean(Lon)) %>% 
-  select(Country, Lat, Lon)
-
+# !!Todo  color by country n####
 
 country_pie_df <- 
   pass.genomic.db %>% 
@@ -354,10 +357,7 @@ country_pie_df <-
   mutate_at(vars(selected_STs_2), ~replace(., is.na(.), 0))
   
 country_pie_df 
-#---
 
-  
-  library(scatterpie)
   p_mapl <-  
     ggplot(map_data("world")) +
     geom_polygon(aes(x = long, y = lat, group = group),
@@ -894,7 +894,7 @@ type_year <-
 
 
 
-# AMR------------------------------
+### AMR------------------------------
 file_Res <-
   read.csv("data/AL_AMRfinderplus_edited.tsv",
            sep = "\t",
@@ -918,7 +918,8 @@ file_Res <-
     )
   ) %>%
   filter(Element.type == "AMR") %>%
-  select(Name, Subclass, Gene.symbol2) %>% pivot_wider(
+  select(Name, Subclass, Gene.symbol2) %>% 
+  pivot_wider(
     .,
     names_from = Subclass,
     values_from = Gene.symbol2,
@@ -927,8 +928,8 @@ file_Res <-
   right_join(., pass.genomic.db, by = c("Name" = "sample_name"))
 
 
-# AMR tile####
-GROUPCarbCOUNT = file_Res %>% group_by(Region,) %>% summarise(n=n())
+#### AMR tile####
+GROUPCarbCOUNT = file_Res %>% group_by(Region) %>% summarise(n=n())
 
 bla_c = c( "\\SHV\\b")
 bla_a = c("\\OXA-1\\b", "\\TEM-1D\\b")
@@ -1022,7 +1023,7 @@ pGENESTILE <-
 pGENESTILE
 
 
-## Vir tile ####
+### Vir tile ####
 
 tempo2 <- 
   file_Res %>% select( Region, Yersiniabactin, Colibactin, Aerobactin, Salmochelin, RmpADC
@@ -1170,3 +1171,155 @@ ptempo2
     plot    
 
 # Carbapenemases ######
+    
+  
+    # !!Todo  Cahnge teh way i call carba genes ##################
+carba_df <- 
+ file_Res %>% 
+      mutate(carb_gene = str_remove(CARBAPENEM, "[-*?_].*")) %>% 
+    select(Region, Country2, Collection_year, carb_gene, ST.1, cgMLST_Sublineage)
+    
+    
+carba_region <- 
+  carba_df %>%   
+    count(carb_gene, Region) %>% 
+  filter(!is.na(carb_gene) ) %>% 
+  filter(carb_gene != "ompk36" | carb_gene != "ompk37") %>% 
+      ggplot() +
+      aes(y= factor(Region, levels=rev(RegionORDER)), x = n) +
+      geom_col(aes(fill = carb_gene) , position = "fill") +
+      xlab("Type") + ylab(NULL) +
+      scale_fill_manual(values = GENECOLORS ) +
+      theme(
+        axis.text.y = element_text(),
+        axis.text.x = element_text(
+          angle = 60,
+          vjust = 1,
+          hjust = 1
+        ),
+        axis.text.y.right = NULL
+      ) +
+      labs(fill = "Type") +
+      theme(axis.line=element_blank(),
+            axis.ticks=element_blank(),
+            legend.position="none",
+            legend.direction = "vertical",
+            panel.background=element_blank(),
+            panel.border=element_blank(),
+            panel.grid.major=element_blank(),
+            panel.grid.minor=element_blank(),
+            plot.background=element_blank(), 
+            axis.text.x = element_text(angle = 45, hjust=0.1, size = 8), 
+            axis.text.y = element_text(color="black", size = 10))  +
+      scale_x_continuous(position = "top") +
+      guides(fill=guide_legend(ncol=1,byrow=TRUE))    
+
+
+#### Map #####
+country_pie_df <- 
+  carba_df %>% 
+  filter(Country2 %in% country_selected ) %>%
+  #mutate(ST.2 = case_when(ST.1 %in% selected_STs_2 ~ ST.1, 
+  #                        TRUE  ~ "Other")) %>%
+  group_by(Country2, carb_gene) %>% 
+  count() %>% 
+  group_by(Country2) %>%
+  mutate(Total= sum(n), Prop = n/sum(n)*100) %>% 
+  ungroup() %>% 
+  select(-n) %>% 
+  pivot_wider(names_from = carb_gene, values_from = Prop ) %>% 
+  left_join(., country_selected_LatLon, by="Country2") %>% 
+  mutate_at(vars(blaIMP:blaGES), ~replace(., is.na(.), 0))
+
+
+carba_mapl <-  
+  ggplot(map_data("world")) +
+  geom_polygon(aes(x = long, y = lat, group = group),
+               color = "black",
+               fill = "white") +
+  
+  geom_scatterpie(data = country_pie_df, 
+                  aes(x = Lon, y = Lat, group= Country
+                      #, r=Total/100
+                  ),
+                  
+                  cols = (c("blaIMP", "blaGES", 
+                             "blaKPC", "blaOXA", "ompK35", "blaNDM", "ompK36", "blaVIM",
+                            "NA"))) +
+  
+  coord_equal() +
+  scale_fill_manual(values = GENECOLORS) +
+  
+  geom_text(data = country_pie_df,
+            aes(x = Lon, y = Lat-7, label= Country)) +
+  theme_void()+
+  theme(
+    legend.position = "none"
+  ) +
+  geom_scatterpie_legend(country_pie_df$Total/100,
+                         x=-160, y=-55, 
+                         labeller=function(x) 100*x)
+
+
+p_mapl 
+
+### type per phylo ####
+carba_type_SL <- 
+  carba_df %>% 
+  mutate(
+    cgMLST_Sublineage2 = case_when(
+      cgMLST_Sublineage %in% selected_cgMLST_SL ~ cgMLST_Sublineage, 
+      TRUE  ~ "Other"
+    )) %>%
+  count(carb_gene, cgMLST_Sublineage2) %>% 
+  ggplot() +
+  aes(
+    y =  n,
+    x = cgMLST_Sublineage2,
+    fill = carb_gene 
+  ) +
+  geom_bar(position="fill", stat="identity")+
+  scale_fill_manual(values = GENECOLORS) +
+  labs(y = NULL, x = "Geographic Region", fill = "cgMLST sL")+
+  theme(legend.position = "none") 
+
+type_SL
+
+### per year ####
+carba_type_year <- 
+  carba_df %>% 
+  filter(Collection_year > 2003 & Collection_year < 2021) %>% 
+  group_by(carb_gene, Collection_year) %>%
+  dplyr::summarise(n = n()) %>%
+  ggplot() +
+  aes(
+    y =  n,
+    x = Collection_year,
+    fill = carb_gene
+  ) +
+  geom_bar(position="fill", stat="identity")+
+scale_fill_manual(values = GENECOLORS) +
+  labs(y = NULL, x = "Geographic Region", fill = "Strain type")+
+  theme(legend.position = "bottom") 
+
+type_year
+####figure ####
+ggarrange( 
+  ggarrange(
+    carba_region, 
+    carba_mapl, 
+    nrow  = 1,
+    widths = c(0.3, 0.7)  ),  
+  
+  ggarrange(
+    carba_type_SL,
+    carba_type_year ,
+    nrow =   1,
+    align = "h"),
+  
+  ncol = 1, 
+  heights = c(0.45, 0.45),
+  align = "v", 
+  common.legend = TRUE,
+  legend = "none"
+)

@@ -43,6 +43,28 @@ update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
                  fourres = "darkred",
                  Susceptible = "darkgray")
   
+  GENECOLORS = c("blaVIM" = "#F0ABA8", 
+                  "blaOXA"= "#E05652",
+                  "blaNDM"= "#D02A25",
+                  "blaKPC" ="#9C201C",
+                 #681512
+                  "twocarb" ="black", 
+                 "Ompk35"="#1ea0ae", 
+                 "Ompk36" = "#084c61",
+                  "-" = "grey")
+  
+  
+  GENECOLORS = c("blaGES" =  "darkgray",
+                  "blaIMI" =  "darkgray",
+                  "blaIMP" =   "#E05652",
+                  "blaKPC" =  "#681512",
+                  "blaNDM" =  "#D02A25",
+                  "blaOXA" =  "#9C201C",
+                  "blaVIM" =  "#F0ABA8",
+                  "two" = "black",
+                  "ompK35" =  "#1ea0ae",
+                  "ompK36" =  "#084c61",
+                 "NA" = "grey")
   
   GENECOLORS1 = c("VIM-1" ="#735751", 
                   "OXA-48"="#db3a34SURV",
@@ -53,7 +75,9 @@ update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
                   "NDM-23+OXA-48" ="black", 
                   "-" = "grey")
 
-  ORIGINCOL <-
+  
+  
+  RegionCOL <-
     c(
       SKPCV = "#C0A8CB",
       Spain = "#dc3977",
@@ -180,9 +204,9 @@ update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
   RESTYPEORDER <- c("Susceptible", "Omp", "Bla", "ESBL", "Carb")
   
   
-  ## ORIGIN ####
+  ## Region ####
   
-  ORIGINORDER <-
+  RegionORDER <-
     c("SKPCV",
       "Spain",
       "Europe",
@@ -193,7 +217,7 @@ update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
       "Unknown")
   
   
-  ORIGINORDER <-
+  RegionORDER <-
     c("SKPCV",
       "Spain",
       "Europe",
@@ -202,3 +226,4 @@ update_geom_defaults("text", list(size = 3, family = theme_get()$text$family))
       "Africa" ,
       "Oceania",
       "Unknown")
+  

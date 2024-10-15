@@ -1,0 +1,11 @@
+# ST307 Global analysis
+
+## Previous analysis
+
+Included Refseq, spanish GCA, SKPCV and NLSAR.
+
+## New 02/07/2024
+
+Only ResfSeq and SKPCV.
+
+
